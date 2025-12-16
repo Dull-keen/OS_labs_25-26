@@ -5,7 +5,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-// Подсчёт количества вхождений подстроки str в файле filename
+#define BUFFER_SIZE 4096
+
+const char *SEARCH_STR = "target\nstring";
+
 int count_occurrences_in_file(const char *filename, const char *str)
 {
     FILE *f = fopen(filename, "r");
@@ -15,34 +18,72 @@ int count_occurrences_in_file(const char *filename, const char *str)
         return -1;
     }
 
-    size_t len = strlen(str);
-    if (len == 0)
+    size_t search_len = strlen(str);
+    if (search_len == 0)
     {
         fclose(f);
         return 0;
     }
 
-    char *line = NULL;
-    size_t linecap = 0;
-    ssize_t linelen;
-    int count = 0;
-
-    while ((linelen = getline(&line, &linecap, f)) != -1)
+    size_t current_buf_size = BUFFER_SIZE;
+    if (search_len >= current_buf_size)
     {
-        char *p = line;
-        while ((p = strstr(p, str)) != NULL)
+        current_buf_size = search_len * 2;
+    }
+
+    char *buffer = malloc(current_buf_size + 1);
+    if (!buffer)
+    {
+        perror("malloc");
+        fclose(f);
+        return -1;
+    }
+
+    int count = 0;
+    size_t overlap = search_len - 1;
+    size_t bytes_in_buffer = 0;
+
+    size_t read_count = fread(buffer, 1, current_buf_size, f);
+    bytes_in_buffer = read_count;
+    buffer[bytes_in_buffer] = '\0';
+
+    while (bytes_in_buffer > 0)
+    {
+        char *p = buffer;
+        char *found_ptr;
+
+        while ((found_ptr = strstr(p, str)) != NULL)
         {
             count++;
-            p += len;
+            p = found_ptr + search_len;
+        }
+
+        if (feof(f))
+        {
+            break;
+        }
+
+        size_t bytes_to_keep = (bytes_in_buffer < overlap) ? bytes_in_buffer : overlap;
+
+        memmove(buffer, buffer + bytes_in_buffer - bytes_to_keep, bytes_to_keep);
+
+        size_t bytes_to_read = current_buf_size - bytes_to_keep;
+        read_count = fread(buffer + bytes_to_keep, 1, bytes_to_read, f);
+
+        bytes_in_buffer = bytes_to_keep + read_count;
+        buffer[bytes_in_buffer] = '\0';
+
+        if (read_count == 0)
+        {
+            break;
         }
     }
 
-    free(line);
+    free(buffer);
     fclose(f);
     return count;
 }
 
-// Строим сбалансированное дерево процессов из n процессов
 void fork_tree(int n)
 {
     if (n <= 1)
@@ -52,7 +93,6 @@ void fork_tree(int n)
 
     int left = (n - 1) / 2;
     int right = (n - 1) - left;
-
     pid_t pid;
 
     if (left > 0)
@@ -88,19 +128,17 @@ void fork_tree(int n)
 
 int main(int argc, char *argv[])
 {
-    if (argc != 3)
+    if (argc != 2)
     {
-        fprintf(stderr, "Usage: %s <filelist> <string>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <filelist>\n", argv[0]);
         return 1;
     }
 
     const char *list_path = argv[1];
-    const char *str = argv[2]; // не аргументом терминала. пустая строка даёт (лен+1)
-
     FILE *list = fopen(list_path, "r");
     if (list == NULL)
     {
-        perror("fopen <filelist>");
+        perror("fopen list");
         return 1;
     }
 
@@ -109,7 +147,6 @@ int main(int argc, char *argv[])
     ssize_t linelen;
     int child_count = 0;
 
-    // Читаем файл со списком путей и для каждого пути создаём процесс
     while ((linelen = getline(&filepath, &linecap, list)) != -1)
     {
         if (linelen > 0 && filepath[linelen - 1] == '\n')
@@ -130,15 +167,19 @@ int main(int argc, char *argv[])
         }
         else if (pid == 0)
         {
-            int count = count_occurrences_in_file(filepath, str);
+            int count = count_occurrences_in_file(filepath, SEARCH_STR);
             if (count > 0)
             {
                 printf("%s: %d\n", filepath, count);
-                _exit(1);  // код 1 — строка найдена в этом файле
+                free(filepath);
+                fclose(list);
+                _exit(1);
             }
             else
             {
-                _exit(0);  // код 0 — не найдена
+                free(filepath);
+                fclose(list);
+                _exit(0);
             }
         }
         else
@@ -152,7 +193,6 @@ int main(int argc, char *argv[])
 
     int any_found = 0;
 
-    // Ждём всех потомков и смотрим их код возврата
     for (int i = 0; i < child_count; i++)
     {
         int status;
@@ -160,7 +200,7 @@ int main(int argc, char *argv[])
         if (ended == -1)
         {
             perror("waitpid");
-            break;
+            continue;
         }
 
         if (WIFEXITED(status))
@@ -175,9 +215,13 @@ int main(int argc, char *argv[])
 
     if (!any_found)
     {
-        printf("Строка \"%s\" не найдена ни в одном файле\n", str);
-        fork_tree((int)strlen(str));
-        pause();  // чтобы главный процесс тоже не завершился мгновенно
+        printf("String not found. Starting fork tree.\n");
+        size_t n_procs = strlen(SEARCH_STR);
+        fork_tree((int)n_procs);
+        if (n_procs > 0)
+        {
+            pause();
+        }
     }
 
     return 0;
