@@ -2,11 +2,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int main()
+int 
+main(void)
 {
     int choice;
     printf("Выберите пример(1/2/3/4): ");
-    scanf("%d", &choice);
+    if (scanf("%d", &choice) != 1) 
+    {
+        printf("Ошибка ввода.\n");
+        return 1;
+    }
 
 
     if (choice == 1)

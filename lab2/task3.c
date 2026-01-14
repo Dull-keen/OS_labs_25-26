@@ -9,7 +9,8 @@
 
 const char *SEARCH_STR = "target\nstring";
 
-int count_occurrences_in_file(const char *filename, const char *str)
+int 
+count_occurrences_in_file(const char *filename, const char *str)
 {
     FILE *f = fopen(filename, "r");
     if (f == NULL)
@@ -84,7 +85,8 @@ int count_occurrences_in_file(const char *filename, const char *str)
     return count;
 }
 
-void fork_tree(int n)
+void 
+fork_tree(int n)
 {
     if (n <= 1)
     {
@@ -126,7 +128,8 @@ void fork_tree(int n)
     }
 }
 
-int main(int argc, char *argv[])
+int 
+main(int argc, char *argv[])
 {
     if (argc != 2)
     {

@@ -20,7 +20,8 @@ typedef struct VisitedFile
 
 VisitedFile *visited_head = NULL;
 
-int mark_visited(dev_t dev, ino_t ino)
+int 
+mark_visited(dev_t dev, ino_t ino)
 {
     VisitedFile *current = visited_head;
     while (current != NULL)
@@ -45,7 +46,8 @@ int mark_visited(dev_t dev, ino_t ino)
     return 1;
 }
 
-const char *get_extension(const char *filename)
+const char *
+get_extension(const char *filename)
 {
     const char *dot = strrchr(filename, '.');
     if (!dot || dot == filename)
@@ -55,7 +57,8 @@ const char *get_extension(const char *filename)
     return dot + 1;
 }
 
-void process_dir(const char *path, int current_depth, int recmin, int recmax)
+void 
+process_dir(const char *path, int current_depth, int recmin, int recmax)
 {
     if (current_depth > recmax)
     {
@@ -115,7 +118,8 @@ void process_dir(const char *path, int current_depth, int recmin, int recmax)
     closedir(dir);
 }
 
-void free_visited()
+void 
+free_visited(void)
 {
     VisitedFile *current = visited_head;
     while (current != NULL)
@@ -126,7 +130,8 @@ void free_visited()
     }
 }
 
-int main(int argc, char *argv[])
+int 
+main(int argc, char *argv[])
 {
     if (argc < 4)
     {

@@ -2,7 +2,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-int main() 
+int 
+main(void) 
 {
     pid_t pid = getpid();
     pid_t ppid = getppid();
