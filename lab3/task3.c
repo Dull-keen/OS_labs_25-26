@@ -4,7 +4,8 @@
 #include <time.h>
 #include <sys/types.h>
 
-int NOD(int a, int b) 
+int 
+NOD(int a, int b) 
 {
     while (b) 
     {
@@ -14,7 +15,8 @@ int NOD(int a, int b)
     return a;
 }
 
-int main() 
+int 
+main(void) 
 {
     int fd1[2]; // pipe parent to child (transfer n)
     int fd2[2]; // pipe child to parent (transfer result)

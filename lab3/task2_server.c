@@ -6,7 +6,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-int main()
+int 
+main(void)
 {
     const char *fifo_path = "/tmp/my_named_pipe";
     int length_counts[101] = {0};

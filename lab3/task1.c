@@ -4,7 +4,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-int main()
+int 
+main(void)
 {
     int pipefd[2];
     pid_t pid;

@@ -5,7 +5,8 @@
 #include <fcntl.h>
 #include <time.h>
 
-int main()
+int 
+main(void)
 {
     const char *fifo_path = "/tmp/my_named_pipe";
     int fd;
