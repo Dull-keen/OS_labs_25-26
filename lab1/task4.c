@@ -4,8 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 
-// Провера на простоту
-int is_prime(unsigned int x) 
+int 
+is_prime(unsigned int x) 
 {
     if (x < 2) return 0;
     if (x == 2 || x == 3) return 1;
@@ -17,8 +17,8 @@ int is_prime(unsigned int x)
     return 1;
 }
 
-// xor8: XOR всех байтов
-void process_xor8(FILE *fp)
+void 
+process_xor8(FILE *fp)
 {
     unsigned char byte;
     unsigned char result = 0;
@@ -31,8 +31,8 @@ void process_xor8(FILE *fp)
     printf("%u\n", result);
 }
 
-// xorodd: XOR всех 4-байтовых подпоследовательностей, где хотя бы один байт является простым числом
-void process_xorodd(FILE *fp)
+void 
+process_xorodd(FILE *fp)
 {
     unsigned char buf[4];
     size_t n = fread(buf, 1, 4, fp);
@@ -78,8 +78,8 @@ void process_xorodd(FILE *fp)
     printf("%u\n", result);
 }
 
-// mask: подсчет 4-ёх байтовых чисел, удовлетворяющих маске
-void process_mask(FILE *fp, uint32_t mask) 
+void
+process_mask(FILE *fp, uint32_t mask) 
 {
     unsigned char buf[4];
     size_t n = fread(buf, 1, 4, fp);
@@ -113,7 +113,8 @@ void process_mask(FILE *fp, uint32_t mask)
     printf("%llu\n", count);
 }
 
-int main(int argc, char *argv[])
+int 
+main(int argc, char *argv[])
 {
     if (argc < 3) 
     {

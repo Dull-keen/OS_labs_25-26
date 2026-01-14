@@ -14,7 +14,8 @@ typedef struct
     int sanctions;
 } User;
 
-int find_user(const char *login, User *u) 
+int 
+find_user(const char *login, User *u) 
 {
     FILE *f = fopen(USERS_FILE, "r");
     if (!f) return -1; 
@@ -30,7 +31,8 @@ int find_user(const char *login, User *u)
     return 0;
 }
 
-void save_user(const User *u) 
+void 
+save_user(const User *u) 
 {
     FILE *f = fopen(USERS_FILE, "a");
     if (!f) 
@@ -42,7 +44,8 @@ void save_user(const User *u)
     fclose(f);
 }
 
-void update_sanction(const char *login, int limit) 
+void 
+update_sanction(const char *login, int limit) 
 {
     FILE *f = fopen(USERS_FILE, "r");
     if (!f) 
@@ -73,21 +76,24 @@ void update_sanction(const char *login, int limit)
     printf("Лимит для %s = %d\n", login, limit);
 }
 
-void show_time() 
+void 
+show_time() 
 {
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
     printf("%02d:%02d:%02d\n", tm->tm_hour, tm->tm_min, tm->tm_sec);
 }
 
-void show_date()
+void 
+show_date()
 {
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
     printf("%02d.%02d.%04d\n", tm->tm_mday, tm->tm_mon + 1, tm->tm_year + 1900); // +1 к месяцу и +1900 к году
 }
 
-void howmuch(const char *date_str, const char *time_str, const char *flag_str) 
+void 
+howmuch(const char *date_str, const char *time_str, const char *flag_str) 
 {
     
     struct tm tm = {0};
@@ -124,13 +130,15 @@ void howmuch(const char *date_str, const char *time_str, const char *flag_str)
     
 }
 
-void flush_input() 
+void 
+flush_input() 
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {}
 }
 
-int main() 
+int 
+main(void) 
 {
     char cmd[128];
     char login[MAX_LOGIN + 1];
