@@ -8,7 +8,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define FIFO_FMT "/tmp/joseph_fifo_%d"
+#define FIFO_FMT "/tmp/task4_fifo_%d"
 
 typedef struct 
 {
